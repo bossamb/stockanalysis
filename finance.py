@@ -22,7 +22,7 @@ def get_stock_name():
             options = webdriver.ChromeOptions()
             options.add_argument("headless")
             URL = 'https://www.naver.com/'
-            driver = webdriver.Chrome(executable_path='/Users/yh/Pycharm/CrawlingLostArk/chromedriver', options=options)
+            driver = webdriver.Chrome(executable_path='//chromedriver', options=options)
             driver.get(url=URL)
             driver.find_element_by_xpath('//*[@id="query"]').send_keys(stock_name)
             driver.find_element_by_xpath('//*[@id="search_btn"]/span[2]').click()

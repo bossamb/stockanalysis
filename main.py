@@ -9,7 +9,7 @@ def getLevel(driver):
 
 def main():
     URL = 'https://finance.yahoo.com/quote/%5EKS11?p=%5EKS11'
-    driver = webdriver.Chrome(executable_path='/Users/yh/Pycharm/CrawlingLostArk/chromedriver')
+    driver = webdriver.Chrome(executable_path='//chromedriver')
     driver.get(url=URL)
     driver.find_element_by_xpath('//*[@id="quote-header-info"]/div[3]/div[1]/div/span[2]')
     # Connecting server
