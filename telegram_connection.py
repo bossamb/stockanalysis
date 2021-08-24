@@ -11,9 +11,9 @@ def job():
     print("current time = ", str(now))
 
 def telegram_sending(stuffs):
-    token = "1941923189:AAEmoXlilPt2PpK2qXPH8-3Ya2bVH880ZXs"
+    token = 'yourtoken'
     bot = telegram.Bot(token=token)
-    chat_id = "1777070088"
+    chat_id = 'yourid'
     text = stuffs
     bot.sendMessage(chat_id=chat_id, text=text)
 
