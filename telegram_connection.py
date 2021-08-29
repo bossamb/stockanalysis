@@ -1,19 +1,41 @@
 import telegram
+from telegram.ext import Updater, MessageHandler, Filters
 import schedule
 import time
 from bs4 import BeautifulSoup as bs
 import requests
 import datetime
+from telegram import ChatAction
+from telegram import InlineKeyboardButton, InlineKeyboardMarkup
+from telegram.ext import CommandHandler, CallbackQueryHandler
 
-def job():
-    now = time.localtime()
-    telegram_sending(get_headlines())
-    print("current time = ", str(now))
+
+#
+#
+# def cb_button(update, context):
+#     query = update.callback_query
+#     data = query.data
+#
+#     context.bot.send_chat_action(
+#         chat_id=update.effective_user.id
+#         , action=ChatAction.TYPING
+#     )
+#     context.bot.edit_message_text(
+#         text='[{}] 작업을 완료하였습니다.'.format(data)
+#         , chat_id=query.message.chat_id
+#         , message_id=query.message.message_id
+#     )
+
+
+# def job():
+#     now = time.localtime()
+#     telegram_sending(get_headlines())
+#     print("current time = ", str(now))
 
 def telegram_sending(stuffs):
-    token = 'yourtoken'
+    token = "1941923189:AAEmoXlilPt2PpK2qXPH8-3Ya2bVH880ZXs"
     bot = telegram.Bot(token=token)
-    chat_id = 'yourid'
+    chat_id = "1777070088"
     text = stuffs
     bot.sendMessage(chat_id=chat_id, text=text)
 
@@ -30,11 +52,25 @@ def get_headlines():
         to_send += f"{i+1}. {d.get_text().strip()} \n\t : https://news.naver.com{d.find('a')['href']} \n "
     return to_send
 
+
+def get_message(update, context):
+    if update.message.text == '뉴스':
+        telegram_sending(get_headlines())
+    else:
+        update.message.reply_text('유효한 명령어를 호출해주세요 \n\t ex) 뉴스')
+
 def main():
-    schedule.every().hours.do(job)
-    while True:
-        schedule.run_pending()
-        time.sleep(1)
+    print('Starting')
+    updater = Updater("1941923189:AAEmoXlilPt2PpK2qXPH8-3Ya2bVH880ZXs", use_context=True)
+    message_handler = MessageHandler(Filters.text, get_message)
+    updater.dispatcher.add_handler(message_handler)
+    updater.start_polling()
+    updater.idle()
+
+    # schedule.every().day.at("1:02").do(job)
+    # while True:
+    #     schedule.run_pending()
+    #     time.sleep(1)
 
 if __name__ == '__main__':
     main()
