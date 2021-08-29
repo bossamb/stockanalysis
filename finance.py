@@ -14,11 +14,11 @@ def get_stock_data(name, start_date, end_date=datetime.today().strftime('%Y-%m-%
     # plt.show()
     return data
 
-def get_stock_name():
+def get_stock_name(name):
     count = 0
     while count <= 3:
         try:
-            stock_name = input("Enter the stock you want to search: ")
+            stock_name = name
             options = webdriver.ChromeOptions()
             options.add_argument("headless")
             URL = 'https://www.naver.com/'
