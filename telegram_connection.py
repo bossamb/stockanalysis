@@ -1,5 +1,5 @@
 import telegram
-from telegram.ext import Updater, MessageHandler, Filters
+from telegram.ext import Updater, MessageHandler, CommandHandler, ConversationHandler, Filters
 # import schedule
 import time
 from bs4 import BeautifulSoup as bs
@@ -10,18 +10,60 @@ from telegram import InlineKeyboardButton, InlineKeyboardMarkup
 from telegram.ext import CommandHandler, CallbackQueryHandler
 
 def message_ctrl(update, context):
-    print(update.message)
     update.message.reply_text('hi')
+
+def f_keyboarding(update, context):
+    bot = telegram.Bot(token="1941923189:AAEmoXlilPt2PpK2qXPH8-3Ya2bVH880ZXs")  # bot을 선언
+    custom_keyboard = [['/news', 'top-right'],  ['/stock', '/???'], ['/kbdoff', '/quit']]
+    reply_markup = telegram.ReplyKeyboardMarkup(custom_keyboard)
+    bot.send_message(chat_id="1777070088", text="Custom Keyboard ON",  reply_markup=reply_markup)
+
+def f_unkeyboarding(update, context):
+    bot = telegram.Bot(token="1941923189:AAEmoXlilPt2PpK2qXPH8-3Ya2bVH880ZXs")  # bot을 선언
+    reply_markup = telegram.ReplyKeyboardRemove()
+    bot.send_message(chat_id="1777070088", text="Custom Keyboard OFF", reply_markup=reply_markup)
+
+def get_headlines():
+    # get headlines with bs4
+    url = 'https://news.naver.com/main/home.naver'
+    headers = {"User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36\
+                (KHTML, like Gecko) Chrome/87.0.4280.88 Safari/537.36"}
+    response = requests.get(url, headers=headers)
+    html_text = response.text
+    soup = bs(html_text, 'html.parser')
+    headlines = soup.find_all('div', {'class': 'hdline_article_tit'})
+    to_send = f"{datetime.datetime.now().strftime('%Y-%m-%d %H')}시 HeadLine News \n\n"
+    for i, d in enumerate(headlines):
+        to_send += f"{i+1}. {d.get_text().strip()} \n\t : https://news.naver.com{d.find('a')['href']} \n "
+    return to_send
+
+def f_news(update, context):
+    update.message.reply_text(get_headlines())
+
+def f_quit(update, context):
+    update.message.reply_text('quit function')
+
+def f_stock(update, context):
+    update.message.reply_text('검색하려는 종목을 입력해주세요')
+    print(update.message)
+    update.message.reply_text('stock function')
+
 
 
 def telegram_connection():
     print('activate telegram connection')
     updater = Updater("1941923189:AAEmoXlilPt2PpK2qXPH8-3Ya2bVH880ZXs", use_context=True)
      # define updater
-    message_handler = MessageHandler(Filters.text, message_ctrl)
-    updater.dispatcher.add_handler(message_handler)
+    updater.dispatcher.add_handler(CommandHandler('kbdon', f_keyboarding))
+    updater.dispatcher.add_handler(CommandHandler('kbdoff', f_unkeyboarding))
+    updater.dispatcher.add_handler(CommandHandler('stock', f_stock))
+    updater.dispatcher.add_handler(CommandHandler('news', f_news))
+    updater.dispatcher.add_handler(CommandHandler('quit', f_quit))
+    updater.dispatcher.add_handler(MessageHandler(Filters.text, message_ctrl))
+    # updater.dispatcher.add_handler(MessageHandler(Filters.text, message_ctrl))
     updater.start_polling()
-    updater.stop()
+    updater.idle()
+    print(updater)
 
 def main():
     telegram_connection()
@@ -29,7 +71,7 @@ def main():
 if __name__ == '__main__':
     main()
     print('aaaa')
-
+#
 
 # dispatcher = updater.dispatcher
 # #dispatcher 는 이벤트 왔을때 처리해줄수 있는 객체 입니다.
@@ -83,20 +125,6 @@ if __name__ == '__main__':
 #     chat_id = "1777070088"
 #     text = stuffs
 #     bot.sendMessage(chat_id=chat_id, text=text)
-#
-# def get_headlines():
-#     # get headlines with bs4
-#     url = 'https://news.naver.com/main/home.naver'
-#     headers = {"User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36\
-#                 (KHTML, like Gecko) Chrome/87.0.4280.88 Safari/537.36"}
-#     response = requests.get(url, headers=headers)
-#     html_text = response.text
-#     soup = bs(html_text, 'html.parser')
-#     headlines = soup.find_all('div', {'class': 'hdline_article_tit'})
-#     to_send = f"{datetime.datetime.now().strftime('%Y-%m-%d %H')}시 HeadLine News \n\n"
-#     for i, d in enumerate(headlines):
-#         to_send += f"{i+1}. {d.get_text().strip()} \n\t : https://news.naver.com{d.find('a')['href']} \n "
-#     return to_send
 #
 #
 # def get_message(update, context):
