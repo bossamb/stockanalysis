@@ -3,22 +3,19 @@ from pandas_datareader import data as pdr
 # import yfinance # must pip install first
 import seaborn as sns
 import matplotlib.pyplot as plt
-from datetime import datetime
+import datetime
 from selenium import webdriver
 
-def get_stock_data(name, start_date, end_date=datetime.today().strftime('%Y-%m-%d')):
+def get_stock_data(name, start_date=(datetime.datetime.today() - datetime.timedelta(weeks=8)).strftime('%Y-%m-%d'),
+                   end_date=datetime.datetime.today().strftime('%Y-%m-%d')):
     data = pdr.get_data_yahoo(name, start_date, end_date)
-    # print(data)
-    # plt.plot(data['Close'])
-    # plt.plot(data['Volume'], secondary)
-    # plt.show()
     return data
 
-def get_stock_name(name):
+def get_stock_name():
     count = 0
     while count <= 3:
         try:
-            stock_name = name
+            stock_name = input('enter')
             options = webdriver.ChromeOptions()
             options.add_argument("headless")
             URL = 'https://www.naver.com/'
@@ -51,6 +48,12 @@ def get_stock_name(name):
 # for d in received:
 #     print(d.text)
 # print(getLevel(driver))
+def make_fig(name):
+    data = get_stock_data(name)
+    sns.lineplot(x=data.index, y=data['Close'])
+    plt.xticks(rotation=30)
+    plt.savefig('stock_temp')
+
 
 if __name__=='__main__':
     stock_info = get_stock_name()
