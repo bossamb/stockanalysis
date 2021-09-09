@@ -1,28 +1,23 @@
-# coding=utf-8
 import telegram
 from telegram.ext import Updater, MessageHandler, CommandHandler, ConversationHandler, Filters
+from telegram import ChatAction, InlineKeyboardButton, InlineKeyboardMarkup
 import logging
-# import schedule
 import time
 from bs4 import BeautifulSoup as bs
+from selenium import webdriver
 import requests
 import datetime
-from telegram import ChatAction
-from telegram import InlineKeyboardButton, InlineKeyboardMarkup
-from telegram.ext import CommandHandler, CallbackQueryHandler
 import pandas_datareader.data as pdweb
 from pandas_datareader import data as pdr
-# import yfinance # must pip install first
 import seaborn as sns
 import matplotlib.pyplot as plt
-from selenium import webdriver
+plt.switch_backend('Agg') # to resolve NSException error
 
 STOCK_NAME = 0
 logging.basicConfig(
     format='%(asctime)s - %(name)s - %(levelname)s - %(message)s', level=logging.INFO
 )
 logger = logging.getLogger(__name__)
-
 
 def get_stock_data(name, start_date=(datetime.datetime.today() - datetime.timedelta(weeks=8)).strftime('%Y-%m-%d'),
                    end_date=datetime.datetime.today().strftime('%Y-%m-%d')):
@@ -102,12 +97,21 @@ def stock_name(update, context):
     stock_searched = get_stock_name(update.message.text)
     logger.info(f"stockname to found is {stock_searched}")
     if stock_searched != None:
+        bot = telegram.Bot(token="1941923189:AAEmoXlilPt2PpK2qXPH8-3Ya2bVH880ZXs")  # bot을 선언
         stock_df = get_stock_data(stock_searched[1])
-        logger.info(f'get_stock_data(stock_searched[1]) is \n{stock_df}')
-        for i in range(-5, 0, 1):
-            update.message.reply_text(f"At Date {stock_df.index[i].strftime('%Y-%m-%d')}\n "
-                                      # f"LOW: {stock_df.iloc[i, 1]}, HIGH: {stock_df.iloc[i, 0]}\n "
-                                      f"종가: {format(stock_df.iloc[i, 3],',')}, 거래량: {format(stock_df.iloc[i, 4],',')}")
+        # logger.info(f'get_stock_data(stock_searched[1]) is \n{stock_df}')
+        if len(stock_df) >= 5:
+            fig, ax = plt.subplots()
+            sns.lineplot(x=stock_df.index, y=stock_df['Close'], ax=ax)
+            plt.xticks(rotation=30)
+            plt.savefig('stock_temp')
+            bot.send_photo(chat_id='1777070088', photo=open('stock_temp.png', 'rb'))
+        else:
+            for i in range(-len(stock_df), 0, 1):
+                update.message.reply_text(f"At Date {stock_df.index[i].strftime('%Y-%m-%d')}\n "
+                                          # f"LOW: {stock_df.iloc[i, 1]}, HIGH: {stock_df.iloc[i, 0]}\n "
+                                          f"종가: {format(stock_df.iloc[i, 3],',')}, 거래량: {format(stock_df.iloc[i, 4],',')}")
+
     return ConversationHandler.END
 
 def cancel(update, context):
