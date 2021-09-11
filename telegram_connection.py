@@ -53,8 +53,8 @@ def message_ctrl(update, context):
     update.message.reply_text('hi')
 
 def f_keyboarding(update, context):
-    bot = telegram.Bot(token="1941923189:AAEmoXlilPt2PpK2qXPH8-3Ya2bVH880ZXs")  # bot을 선언
-    custom_keyboard = [['/news', 'top-right'],  ['/stock', '/???'], ['/kbdoff', '/quit']]
+    bot = telegram.Bot(token="1941923189:AAEmoXlilPt2PpK2qXPH8-3Ya2bVH880ZㄹXs")  # bot을 선언
+    custom_keyboard = [['/news', 'top-right'],  ['/stock', '/TBD'], ['/kbdoff', '/quit(TBD)']]
     reply_markup = telegram.ReplyKeyboardMarkup(custom_keyboard)
     bot.send_message(chat_id="1777070088", text="Custom Keyboard ON",  reply_markup=reply_markup)
 
